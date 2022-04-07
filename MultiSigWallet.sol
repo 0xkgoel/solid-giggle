@@ -59,7 +59,7 @@ contract MultiSigWallet is Ownable {
 
 		require(!previouslyApproved, "Transfer previously approved");
 		approvals.push(msg.sender);
-        approvalGranted(msg.sender, _id);
+        emit approvalGranted(msg.sender, _id);
 		outstandingTransfers[_id] = approvals;
 		
 		return _initiateTransfer(_id, approvals.length);
@@ -72,7 +72,7 @@ contract MultiSigWallet is Ownable {
             require(!trx.completed, "Transfer already completed");
             require(trx.amount <= address(this).balance, "Insufficient Balance to Complete Transfer");
 			trx.to.transfer(trx.amount);
-            transferCompleted(_id, trx.to, trx.amount);
+            emit transferCompleted(_id, trx.to, trx.amount);
             trx.completed = true;
 		}
 
