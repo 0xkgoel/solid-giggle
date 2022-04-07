@@ -4,12 +4,12 @@ pragma abicoder v2;
 import "./Ownable.sol";
 
 contract MultiSigWallet is Ownable {
-    struct Trx {
+	struct Trx {
 		uint id;
 		address from;
 		address payable to;
 		uint amount;
-        bool completed; //track if the transfer has already gone through to prevent further unnecessary approvals
+		bool completed; //track if the transfer has already gone through to prevent further unnecessary approvals
 	}
 
     constructor(address[] memory _owners, uint _minApprovals) Ownable(_owners, _minApprovals) {}
@@ -30,9 +30,9 @@ contract MultiSigWallet is Ownable {
 	
 	function deposit() external payable {}
 
-    function getBalance() public view onlyOwners returns (uint) {
-        return address(this).balance;
-    }
+	function getBalance() public view onlyOwners returns (uint) {
+		return address(this).balance;
+	}
 
 	function requestTransfer(uint _amount, address payable _to) public onlyOwners returns(Trx memory) {
         require(_amount <= address(this).balance, "Insufficient Balance to Request Transfer");
@@ -68,14 +68,15 @@ contract MultiSigWallet is Ownable {
 	function _initiateTransfer(uint _id, uint _approvals) private returns(Trx memory) {
 		Trx memory trx = trxs[_id];
 
-        if(_approvals >= minApprovals) {
-            require(!trx.completed, "Transfer already completed");
-            require(trx.amount <= address(this).balance, "Insufficient Balance to Complete Transfer");
-			trx.to.transfer(trx.amount);
-            transferCompleted(_id, trx.to, trx.amount);
-            trx.completed = true;
+		if(_approvals >= minApprovals) {
+		    require(!trx.completed, "Transfer already completed");
+		    require(trx.amount <= address(this).balance, "Insufficient Balance to Complete Transfer");
+		    
+		    trx.to.transfer(trx.amount);
+		    transferCompleted(_id, trx.to, trx.amount);
+		    trx.completed = true;
 		}
 
-        return trx;
+		return trx;
 	}
 }
